@@ -1,0 +1,30 @@
+package com.idricealy.jwttokens.controller.article
+
+import com.idricealy.jwttokens.model.Article
+import com.idricealy.jwttokens.service.ArticleService
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/article")
+class ArticleController(
+    private val articleService: ArticleService
+) {
+
+    @GetMapping
+    fun listAll(): List<ArticleResponse> =
+        articleService.findAll()
+            .map { it.toResponse() }
+
+    /**
+     * Extension function to separate model and the response data
+     */
+    private fun Article.toResponse(): ArticleResponse =
+        ArticleResponse(
+            id = this.id,
+            title = this.title,
+            content = this.content
+        )
+
+}
