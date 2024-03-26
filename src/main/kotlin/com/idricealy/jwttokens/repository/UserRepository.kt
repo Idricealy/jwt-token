@@ -2,28 +2,34 @@ package com.idricealy.jwttokens.repository
 
 import com.idricealy.jwttokens.model.Role
 import com.idricealy.jwttokens.model.User
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
-class UserRepository {
+class UserRepository(
+    private val encoder: PasswordEncoder
+) {
     private val users = mutableListOf(
         User(id = UUID.randomUUID(),
             email = "email-1@gmail.com",
-            password = "pass1",
+            password = encoder.encode("pass1"),
             role = Role.USER),
         User(id = UUID.randomUUID(),
             email = "email-2@gmail.com",
-            password = "pass2",
+            password = encoder.encode("pass2"),
             role = Role.ADMIN),
         User(id = UUID.randomUUID(),
             email = "email-3@gmail.com",
-            password = "pass3",
+            password = encoder.encode("pass3"),
             role = Role.USER)
     )
 
-    fun save(user: User): Boolean =
-        users.add(user)
+    fun save(user: User): Boolean {
+        //create a copy of user to only update the password with encoder
+        val updated = user.copy(password = encoder.encode(user.password))
+        return users.add(updated)
+    }
 
     fun findByEmail(email: String): User? =
         users.firstOrNull { it.email == email}
