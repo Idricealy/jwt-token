@@ -41,16 +41,21 @@ class AuthenticationService(
 
     fun refreshAccessToken(token: String): String? {
         val extractedEmail = tokenService.extractEmail(token)
+        val stateIsExpired = tokenService.isExpired(token) ?: true
 
         return extractedEmail?.let {email ->
             val currentUserDetails = userDetailsService.loadUserByUsername(email)
             val refreshTokenUserDetails = refreshTokenRepository.findUserDetailsByToken(token)
 
-            if(!tokenService.isExpired(token) && currentUserDetails.username == refreshTokenUserDetails?.username)
+            if(!stateIsExpired && currentUserDetails.username == refreshTokenUserDetails?.username)
                 generateAccessToken(currentUserDetails)
             else
                 null
         }
+    }
+
+    fun isValidToken (token: String): Boolean {
+        return tokenService.isExpired(token) != null
     }
 
     private fun generateRefreshToken(user: UserDetails) = tokenService.generate(

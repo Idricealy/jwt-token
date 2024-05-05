@@ -18,21 +18,26 @@ class AuthController(
     fun authenticate(@RequestBody authRequest: AuthenticationRequest) : AuthenticationResponse =
         authenticationService.authentication(authRequest)
 
+    @PostMapping("/isValidToken")
+    fun isValidToken(@RequestBody tokenRequest: TokenRequest): IsAuthResponse? =
+        authenticationService.isValidToken(tokenRequest.token)?.mapToIsAuthResponse()
+
     @PostMapping("/refresh")
     fun refreshAccessToken(
         @RequestBody request: RefreshTokenRequest
     ) : TokenResponse {
 
-        print("here")
         return authenticationService.refreshAccessToken(request.token)
             ?.mapToTokensResponse()
             ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid refrehs token!")
     }
-
-
     private fun String.mapToTokensResponse(): TokenResponse =
         TokenResponse(
             token = this
         )
 
+    private fun Boolean.mapToIsAuthResponse(): IsAuthResponse =
+        IsAuthResponse(
+            isAuth = this
+        )
 }

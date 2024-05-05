@@ -47,12 +47,13 @@ class TokenService (
      */
     fun extractEmail(token: String): String? =
         getAllClaims(token)
-            .subject
+            ?.subject
 
-    fun isExpired(token: String): Boolean =
+    //should return false if token is expired
+    fun isExpired(token: String): Boolean? =
         getAllClaims(token)
-            .expiration
-            .before(Date(System.currentTimeMillis()))
+            ?.expiration
+            ?.before(Date(System.currentTimeMillis()))
 
     /**
      * Try to match if the current email extract from jwtToken equals the current user.
@@ -61,16 +62,28 @@ class TokenService (
     fun isValid(token: String, userDetails: UserDetails) : Boolean {
         val email = extractEmail(token)
 
-        return userDetails.username.equals(email) && !isExpired(token)
+        val isUserExpired = isExpired(token) ?: true
+
+        return userDetails.username.equals(email) && !isUserExpired
     }
 
-    private fun getAllClaims(token: String) : Claims {
-        val parser = Jwts.parser()
-            .verifyWith(securityKey)
-            .build()
+    /**
+     * Retrieve all claims of jwt using the token
+     */
+    private fun getAllClaims(token: String) : Claims? {
 
-        return parser.parseSignedClaims(token)
-            .payload
+        return try {
+            val parser = Jwts.parser()
+                .verifyWith(securityKey)
+                .build()
+
+
+            parser.parseSignedClaims(token)
+                .payload
+        } catch (error : Exception) {
+            null
+        }
+
     }
 
 

@@ -32,9 +32,9 @@ class SecurityConfiguration (
             // who and how can access to API
             .authorizeHttpRequests {
                 it
-                    .requestMatchers("/api/auth", "/api/auth/refresh", "/error")
+                    .requestMatchers("/api/auth", "/api/auth/refresh", "/error",  )
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/user")
+                    .requestMatchers(HttpMethod.POST, "/api/user", "/api/auth/isValidToken")
                     .permitAll()
                     .requestMatchers("/api/user**")
                     .hasRole("ADMIN")

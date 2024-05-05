@@ -19,8 +19,11 @@ repositories {
 }
 
 dependencies {
+	//should be remove ?
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	testImplementation("org.springframework.security:spring-security-test")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	runtimeOnly("io.jsonwebtoken:jjwt-orgjson:0.12.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")
